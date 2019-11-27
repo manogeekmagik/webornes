@@ -127,6 +127,5 @@
     } catch (PDOException $error) {
         die($error);
     }
-
-
+    
 ?>
