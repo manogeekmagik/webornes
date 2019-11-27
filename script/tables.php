@@ -1,19 +1,15 @@
 <?php
-    $servername = "localhost";
-    $username = "dmhma";
-    $password = "webornes5";
-    $dbname = "webornes";
-
-    
     try {
 
-        $connexion = new PDO('mysql:host=localhost', $username, $password);
+        require 'connectdb.php';
+
+        echo 'Je suis connecté à la base de donnée';
 
         $request = "CREATE TABLE IF NOT EXISTS company(
             id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
             nom VARCHAR (255)
         )";
-        $connexion->execute($request);
+        $connexion->exec($request);
 
         echo 'table company créee';
 
@@ -21,15 +17,15 @@
             id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
             nom VARCHAR (255)
         )";
-        $connexion->execute($request);
+        $connexion->exec($request);
 
         echo 'table outlet créee';
 
         $request = "CREATE TABLE IF NOT EXISTS powers(
             id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            typepower INT NOT NULL(4)
+            typepower VARCHAR (5)
         )";
-        $connexion->execute($request);
+        $connexion->exec($request);
 
         echo 'table powers créee';
 
@@ -37,28 +33,17 @@
             id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
             nom VARCHAR (20)
         )";
-        $connexion->execute($request);
+        $connexion->exec($request);
 
         echo 'table access créee';
 
-        $request = "CREATE TABLE IF NOT EXISTS terminal(
-            id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            nom VARCHAR (255),
-            latitude int (50);
-            longitude int (50);
-            accessibility VARCHAR (20)
-        )";
-        $connexion->execute($request);
-
-        echo 'table terminal créee';
-
-        // table county
-        $request="CREATE TABLE IF NOT EXISTS county(
+    // table county
+    $request="CREATE TABLE IF NOT EXISTS county(
         id INT AUTO_INCREMENT NOT NULL,
         nom VARCHAR(200),
         PRIMARY KEY (id)
         )";
-        $connexion->execute($request);
+        $connexion->exec($request);
         echo 'table county créee';
     
         // ici create table 
@@ -69,7 +54,7 @@
         PRIMARY KEY (id),
         FOREIGN KEY (county_id) REFERENCES county(id)
         )";
-        $connexion->execute($request);
+        $connexion->exec($request);
         echo 'table departments créee';
     
         // ici create table 
@@ -80,52 +65,78 @@
         PRIMARY KEY (id),
         FOREIGN KEY (departments_id) REFERENCES departments(id)
         )";
-        $connexion->execute($request);
+        $connexion->exec($request);
         echo 'table city créee';
 
         $request = "CREATE TABLE IF NOT EXISTS street(
         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        nom VARCHAR (255)
+        nom VARCHAR (255),
+        city_id INT,
+        FOREIGN KEY (city_id) REFERENCES city(id)
         )";
-        $connexion->execute($request);
+        $connexion->exec($request);
 
         echo 'table street créee';
 
-        // ici create table 
-        $request="CREATE TABLE IF NOT EXISTS roles(
+    $request = "CREATE TABLE IF NOT EXISTS terminal(
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        nom VARCHAR (255),
+        latitude INT (50),
+        longitude INT (50),
+        accessibility VARCHAR (20),
+        company_id INT,
+        outlet_id INT,
+        powers_id INT,
+        access_id INT,
+        street_id INT,
+        FOREIGN KEY (company_id) REFERENCES company(id),
+        FOREIGN KEY (outlet_id) REFERENCES outlet(id),
+        FOREIGN KEY (powers_id) REFERENCES powers(id),
+        FOREIGN KEY (access_id) REFERENCES access(id),
+        FOREIGN KEY (street_id) REFERENCES street(id)
+        )";
+        $connexion->exec($request);
+
+        echo 'table terminal créee';
+
+    // ici create table 
+    $request="CREATE TABLE IF NOT EXISTS roles(
         id INT AUTO_INCREMENT NOT NULL,
         nom_du_role VARCHAR(200),
         PRIMARY KEY (id)
         )";
-        $connexion->execute($request);
+        $connexion->exec($request);
         echo 'table roles créee';
 
         // ici create  table 
         $request="CREATE TABLE IF NOT EXISTS users(
         id INT AUTO_INCREMENT NOT NULL,
         pseudo VARCHAR(200),
+        email VARCHAR(200),
         mot_de_passe VARCHAR(100),
         roles_id INT,
         PRIMARY KEY (id),
         FOREIGN KEY (roles_id) REFERENCES roles(id)
         )";
-        $connexion->execute($request);
+        $connexion->exec($request);
         echo 'table users créee';
-        // ici create  table 
+
         $request="CREATE TABLE IF NOT EXISTS commentary(
         id INT AUTO_INCREMENT NOT NULL,
         texte VARCHAR(200),
-        datetime2, 
+        dates DATETIME,
+        terminal_id INT,
         users_id INT,
         PRIMARY KEY (id),
+        FOREIGN KEY (terminal_id) REFERENCES terminal(id),
         FOREIGN KEY (users_id) REFERENCES users(id)
         )";
-        $connexion->execute($request);
-        echo 'table users créee';
+        $connexion->exec($request);
 
+        echo 'table commentary créee';
 
     } catch (PDOException $error) {
         die($error);
     }
-    
+
 ?>
